@@ -15,6 +15,7 @@ export default async function Home() {
           name="title"
           type="text"
           placeholder="Add a new todo"
+           required
           className="shadow appearance-none border rounded py-2 px-3 text-grey-darker mr-2 text-black"
         />
         <button
