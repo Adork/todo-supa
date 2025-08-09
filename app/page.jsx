@@ -6,6 +6,15 @@ const prisma = new PrismaClient();
 
 export default async function Home() {
   const todos = await prisma.todo.findMany();
+  const priorityOrder = {
+    High: 1,
+    Normal: 2,
+    Low: 3,
+  };
+
+  const sortedtodos = [...todos].sort( (a, b) => {
+     return priorityOrder[a.priority] - priorityOrder[b.priority];
+  });
 
   return (
     <main className="container mx-auto px-4">
@@ -15,9 +24,24 @@ export default async function Home() {
           name="title"
           type="text"
           placeholder="Add a new todo"
-           required
+          required
           className="shadow appearance-none border rounded py-2 px-3 text-grey-darker mr-2 text-black"
         />
+        <div className="relative inline-block mr-2">
+          <select
+            name="priority"
+            defaultValue={'DEFAULT'}
+            className="shadow appearance-none border rounded py-2 px-3 text-grey-darker text-black pr-8"
+          >
+          <option value="DEFAULT" disabled>Choose your Task Priority ...</option>
+            <option value="High">High</option>
+            <option value="Normal">Normal</option>
+            <option value="Low">Low</option>
+          </select>
+          <span className="pointer-events-none  absolute inset-y-0 right-0 flex items-center px-2 text-black text-red-800">
+            ▼
+          </span>
+        </div>
         <button
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -26,12 +50,12 @@ export default async function Home() {
         </button>
       </form>
       <ul>
-        {todos.map((todo) => (
+        {sortedtodos.map((todo) => (
           <li
             key={todo.id}
             className="flex justify-between items-center bg-gray-100 px-4 py-2 rounded shadow my-2"
           >
-            <span className="text-lg text-black">{todo.title}</span>
+            <span className={` text-lg text-black ${todo.priority === "High" ? "bg-red-500" : todo.priority === 'Normal' ? "bg-yellow-500" : "bg-gray-500 "}`}>{todo.title} {todo.priority}</span>
             <form action={deleteTodo}>
               <input type="hidden" name="id" value={todo.id} />
               <button
